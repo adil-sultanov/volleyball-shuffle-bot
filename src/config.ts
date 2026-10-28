@@ -15,6 +15,8 @@ export const config = {
   /** The only user who can grant or revoke admin rights. Always an admin. */
   ownerId: Number(required("OWNER_ID")),
   webhookSecret: process.env.WEBHOOK_SECRET ?? "",
+  /** IANA time zone for the date in poll questions, e.g. Asia/Seoul. */
+  timeZone: process.env.TIMEZONE || "UTC",
   dbPath: process.env.DB_PATH ?? "./data/app.db",
   port: Number(process.env.PORT ?? 8080),
 };

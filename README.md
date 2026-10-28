@@ -17,7 +17,7 @@ A Telegram bot that posts an in/out poll in your group, tracks who's coming, and
 
 | Command | What it does |
 |---|---|
-| `/poll [question]` | Posts the in/out poll (the default question includes today's date) |
+| `/poll [time or question]` | Posts the in/out poll. `/poll 8pm` → "🏐 Volleyball, Wed 28 Oct at 8 PM: are you in?" (also `7:30pm`, `20:00`, `noon`, `midnight`). Any other text is used as the question |
 | `/shuffle [size]` | Teams from the latest poll. Reply to an older poll to use that one instead |
 | `@bot shuffle [size]` / `@bot poll` | The same, via mention |
 | `/teamsize N` | Sets the default team size (default 6) |

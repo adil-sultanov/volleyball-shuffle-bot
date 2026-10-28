@@ -1,5 +1,6 @@
 import { InlineKeyboard, type Bot, type Context } from "grammy";
 import { config, CREDIT } from "../config.js";
+import { pollQuestionFromArg } from "../core/pollQuestion.js";
 import { createPoll, ensureChat, getPollByMessage, latestPoll, updateChat, upsertTgPlayer } from "../db/repo.js";
 import { isAdmin } from "./admin.js";
 import { postShuffle, reshuffle } from "./teams.js";
@@ -20,13 +21,9 @@ async function requireGroupAdmin(ctx: Context): Promise<boolean> {
   return true;
 }
 
-function defaultQuestion() {
-  const date = new Date().toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
-  return `🏐 Volleyball, ${date}: are you in?`;
-}
-
-async function sendPoll(ctx: Context, question?: string) {
-  const q = question?.trim() || defaultQuestion();
+/** `arg` is empty, a time like "8pm" (added to the default question), or a custom question. */
+async function sendPoll(ctx: Context, arg = "") {
+  const q = pollQuestionFromArg(arg, new Date(), config.timeZone);
   const msg = await ctx.api.sendPoll(ctx.chat!.id, q, [{ text: "✅ In" }, { text: "❌ Out" }], {
     is_anonymous: false,
   });
@@ -73,7 +70,7 @@ export function registerCommands(bot: Bot) {
         "Hi! I balance volleyball teams.",
         "",
         "In the group (admins):",
-        "/poll [question]: post the in/out poll",
+        "/poll [time or question]: post the in/out poll, e.g. /poll 8pm",
         "/shuffle [size]: post balanced teams from the latest poll",
         "/teamsize N: set the default team size",
         "/sums on|off: show or hide team strength totals",
