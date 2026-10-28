@@ -27,7 +27,7 @@ A Telegram bot that posts an in/out poll in your group, tracks who's coming, and
 
 **Admin panel:** open the bot's private chat and tap the **Players** menu button (or send `/app` there). The bot never posts anything in the group for this. Non-admins who open it see an "admins only" screen. In the group's `/` menu, only the owner and admins see the bot's commands.
 
-**Team sizing:** the bot makes `floor(players / size)` teams, with at least 2. Leftover players are spread across teams and marked `*` as subs who rotate in. The group never sees individual strength levels.
+**Team sizing:** the bot makes `floor(players / size)` teams, with at least 2. Leftover players are spread across teams and listed at the bottom of their team as `(sub)`, rotating in. The teams message lists one player per line with their @username, so everyone gets pinged. The group never sees individual strength levels.
 
 ## Setup
 

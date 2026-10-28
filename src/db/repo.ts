@@ -113,7 +113,7 @@ export function shuffleForPoll(pollId: string, chatId: number, teamSize?: number
   const going = attendees(pollId);
   if (going.length < 2) throw new Error(`Only ${going.length} player(s) are in. Need at least 2.`);
   const result = shuffleTeams(
-    going.map((p) => ({ id: p.id, name: playerName(p), strength: p.strength })),
+    going.map((p) => ({ id: p.id, name: playerName(p), username: p.username ?? undefined, strength: p.strength })),
     size,
   );
   return { result, text: formatTeams(result, { showSums: chat.showTeamSums }) };

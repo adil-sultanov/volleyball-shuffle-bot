@@ -14,8 +14,8 @@ export function TeamsView({ result }: { result: ShuffleResult }) {
             {t.players.map((p) => (
               <span key={p.id} className="pill">
                 {p.name}
-                {t.subIds.includes(p.id) && "*"}
                 <small>{p.strength}</small>
+                {t.subIds.includes(p.id) && <em> (sub)</em>}
               </span>
             ))}
           </div>

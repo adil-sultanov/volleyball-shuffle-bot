@@ -1,6 +1,8 @@
 export interface ShufflePlayer {
   id: number;
   name: string;
+  /** Telegram @username without the @, if the player has one. */
+  username?: string;
   strength: number;
 }
 
@@ -110,8 +112,10 @@ export function shuffleTeams(input: ShufflePlayer[], teamSize: number, rng: Rng 
     teams: teams.map((players) => {
       const extra = Math.max(0, players.length - teamSize);
       const subIds = shuffleInPlace(players.map((p) => p.id), rng).slice(0, extra);
+      // Alphabetical, with subs at the bottom.
+      const isSub = (p: ShufflePlayer) => (subIds.includes(p.id) ? 1 : 0);
       return {
-        players: [...players].sort((x, y) => x.name.localeCompare(y.name)),
+        players: [...players].sort((x, y) => isSub(x) - isSub(y) || x.name.localeCompare(y.name)),
         subIds,
         sum: sumOf(players),
       };

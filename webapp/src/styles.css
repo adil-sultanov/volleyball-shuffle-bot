@@ -159,3 +159,4 @@ details .pill { background: var(--bg); }
 
 .credit { padding: 0 16px 24px; text-align: center; font-size: 12px; color: var(--hint); }
 .credit a { color: var(--link); text-decoration: none; }
+.pill em { color: var(--hint); font-size: 12px; }

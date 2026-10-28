@@ -62,13 +62,29 @@ describe("shuffleTeams", () => {
 });
 
 describe("formatTeams", () => {
-  it("lists teams, marks subs, and hides sums unless asked", () => {
-    const r = shuffleTeams(makePlayers(14), 6, mulberry32(3));
+  const players: ShufflePlayer[] = Array.from({ length: 14 }, (_, i) => ({
+    id: i + 1,
+    name: `P${i + 1}`,
+    username: i % 2 ? `user${i + 1}` : undefined,
+    strength: 3,
+  }));
+
+  it("lists one player per line with @username and (sub) markers", () => {
+    const r = shuffleTeams(players, 6, mulberry32(3));
     const text = formatTeams(r, { showSums: false });
-    expect(text).toContain("14 players, 2 × 6 (+2 subs)");
-    expect(text).toContain("<b>Team 1</b>:");
-    expect(text).not.toContain("Σ");
-    expect(formatTeams(r, { showSums: true })).toContain("Σ");
+    expect(text).toContain("14 players · 2 teams · 2 subs");
+    expect(text).toContain("🔴 <b>Team 1</b>\n");
+    expect(text).toContain("🔵 <b>Team 2</b>\n");
+    expect(text).toMatch(/^P2 @user2( <i>\(sub\)<\/i>)?$/m);
+    expect(text).toMatch(/^P1( <i>\(sub\)<\/i>)?$/m);
+    expect(text.match(/\(sub\)/g)).toHaveLength(2);
+    expect(text).not.toContain("strength");
+    expect(formatTeams(r, { showSums: true })).toContain("strength 21");
+  });
+
+  it("puts subs at the bottom of their team", () => {
+    const r = shuffleTeams(players, 6, mulberry32(3));
+    for (const t of r.teams) expect(t.subIds).toContain(t.players[t.players.length - 1].id);
   });
 
   it("escapes HTML in names", () => {
