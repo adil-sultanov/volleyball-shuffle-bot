@@ -61,6 +61,49 @@ describe("shuffleTeams", () => {
   });
 });
 
+describe("shuffleTeams with a requested team count", () => {
+  const sizes = (n: number, teams: number) => shuffleTeams(makePlayers(n), 6, mulberry32(1), teams).teams.map((t) => t.players.length);
+
+  it("fills teams to the team size and leaves the last one short", () => {
+    expect(sizes(14, 3)).toEqual([6, 6, 2]);
+    expect(sizes(17, 3)).toEqual([6, 6, 5]);
+    expect(sizes(18, 3)).toEqual([6, 6, 6]);
+  });
+
+  it("uses every player exactly once and keeps the requested count", () => {
+    const r = shuffleTeams(makePlayers(14), 6, mulberry32(1), 3);
+    expect(ids(r)).toEqual(Array.from({ length: 14 }, (_, i) => i + 1));
+    expect(r.requestedTeams).toBe(3);
+    expect(r.teams.every((t) => t.subIds.length === 0)).toBe(true);
+  });
+
+  it("spreads extra players as subs when the teams are full", () => {
+    const r = shuffleTeams(makePlayers(20), 6, mulberry32(1), 2);
+    expect(r.teams.map((t) => t.players.length)).toEqual([10, 10]);
+    expect(r.teams.map((t) => t.subIds.length)).toEqual([4, 4]);
+  });
+
+  it("never makes an empty team", () => {
+    expect(sizes(8, 5)).toEqual([6, 2]);
+    expect(sizes(12, 5)).toEqual([6, 6]);
+  });
+
+  it("splits evenly when there are too few players to fill one team", () => {
+    expect(sizes(6, 2)).toEqual([3, 3]);
+    expect(sizes(4, 3)).toEqual([2, 2]);
+  });
+
+  it("gives the short team a similar average, not a similar total", () => {
+    for (let seed = 1; seed <= 200; seed++) {
+      const rng = mulberry32(seed);
+      const r = shuffleTeams(makePlayers(16, rng), 6, rng, 3);
+      expect(r.teams.map((t) => t.players.length)).toEqual([6, 6, 4]);
+      const avgs = r.teams.map((t) => t.sum / t.players.length);
+      expect(Math.max(...avgs) - Math.min(...avgs), `seed ${seed}`).toBeLessThanOrEqual(1);
+    }
+  });
+});
+
 describe("formatTeams", () => {
   const players: ShufflePlayer[] = Array.from({ length: 14 }, (_, i) => ({
     id: i + 1,

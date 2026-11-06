@@ -6,28 +6,36 @@ A Telegram bot that posts an in/out poll in your group, tracks who's coming, and
 
 ## How it works
 
-1. An admin runs `/poll` in the group. The bot posts a non-anonymous poll with "✅ In" and "❌ Out".
+1. Anyone runs `/poll` in the group. The bot posts a non-anonymous poll with "✅ In" and "❌ Out".
 2. As people vote, the bot records who's in. New voters are added to the player list with strength 3 and marked **new**.
-3. An admin runs `/shuffle` or writes `@yourbot shuffle 6`. The bot replies with balanced teams and a 🔄 **Reshuffle** button.
+3. Anyone runs `/shuffle` or writes `@yourbot shuffle 3`. The bot replies with balanced teams and a 🔄 **Reshuffle** button.
 4. In the bot's private chat, admins tap the **Players** menu button to open the mini app. There they set strength levels, add guests, add or remove attendees, preview teams, and see the shuffle history.
 
 > **Why the bot posts the poll:** Telegram only tells a bot *who* voted in polls the bot sent itself. For polls that people post, it only sees the totals.
 
-## Commands (bot admins)
+## Commands
+
+Anyone in the group can use these, and tap 🔄 **Reshuffle**:
 
 | Command | What it does |
 |---|---|
 | `/poll [time or question]` | Posts the in/out poll. `/poll 8pm` → "🏐 Volleyball, Wed 28 Oct at 8 PM: are you in?" (also `7:30pm`, `20:00`, `noon`, `midnight`). Any other text is used as the question |
-| `/shuffle [size]` | Teams from the latest poll. Reply to an older poll to use that one instead |
-| `@bot shuffle [size]` / `@bot poll` | The same, via mention |
-| `/teamsize N` | Sets the default team size (default 6) |
+| `/shuffle [teams]` | Teams from the latest poll. `/shuffle 3` makes 3 teams of 6. Reply to an older poll to use that one instead |
+| `@bot shuffle [teams]` / `@bot poll` | The same, via mention |
+| `/help` | Briefly explains the commands above. Also works in the bot's private chat |
+
+Only bot admins can use these:
+
+| Command | What it does |
+|---|---|
+| `/teamsize N` | Sets the team size (default 6) |
 | `/sums on\|off` | Shows or hides each team's strength total in the group message |
 
 **Who is an admin:** the owner (`OWNER_ID` in `.env`) is always an admin, and is the only person who can add or remove admins. Being an admin of the Telegram group doesn't count. To make someone an admin, the owner opens the mini app → **Players**, taps the person's name, and turns on **Admin**. That person has to be in the player list first: they get there by voting in a poll, or by sending `/start` to the bot.
 
-**Admin panel:** open the bot's private chat and tap the **Players** menu button (or send `/app` there). The bot never posts anything in the group for this. Non-admins who open it see an "admins only" screen. In the group's `/` menu, only the owner and admins see the bot's commands.
+**Admin panel:** open the bot's private chat and tap the **Players** menu button (or send `/app` there). The bot never posts anything in the group for this. Non-admins who open it see an "admins only" screen. In the group's `/` menu, everyone sees `/poll`, `/shuffle` and `/help`; only the owner and admins see the admin commands.
 
-**Team sizing:** the bot makes `floor(players / size)` teams, with at least 2. Leftover players are spread across teams and listed at the bottom of their team as `(sub)`, rotating in. The teams message lists one player per line with their @username, so everyone gets pinged. The group never sees individual strength levels.
+**Team sizing:** plain `/shuffle` makes `floor(players / size)` teams, with at least 2. `/shuffle X` makes X teams and fills them to the team size, so with 14 players `/shuffle 3` gives teams of 6, 6 and 2. If there aren't enough players for X teams, it makes as many as the players can fill. Reshuffling keeps the same number of teams. Either way, leftover players are spread across teams and listed at the bottom of their team as `(sub)`, rotating in. The teams message lists one player per line with their @username, so everyone gets pinged. The group never sees individual strength levels.
 
 ## Setup
 

@@ -16,7 +16,7 @@ export const players = sqliteTable("players", {
   /** False until an admin sets the strength explicitly. */
   rated: integer("rated", { mode: "boolean" }).notNull().default(false),
   active: integer("active", { mode: "boolean" }).notNull().default(true),
-  /** Granted by the owner. Admins can run /poll and /shuffle and use the mini app. */
+  /** Granted by the owner. Admins can change group settings and use the mini app. */
   isAdmin: integer("is_admin", { mode: "boolean" }).notNull().default(false),
   createdAt: integer("created_at").notNull().default(now),
   updatedAt: integer("updated_at").notNull().default(now),

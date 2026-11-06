@@ -141,7 +141,7 @@ function EditPlayer({
       {canManageAdmin && (
         <label className="toggle">
           <input type="checkbox" checked={player.isAdmin} onChange={(e) => onSave({ isAdmin: e.target.checked })} />
-          Admin (can post polls, shuffle teams, and edit players)
+          Admin (can edit players and change group settings)
         </label>
       )}
     </div>

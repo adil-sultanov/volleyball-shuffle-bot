@@ -107,7 +107,7 @@ export interface ShuffleOutcome {
 }
 
 /** Runs the shuffle for a poll's "in" list. Throws a user-facing Error if it can't. */
-export function shuffleForPoll(pollId: string, chatId: number, teamSize?: number): ShuffleOutcome {
+export function shuffleForPoll(pollId: string, chatId: number, teamSize?: number, teams?: number): ShuffleOutcome {
   const chat = ensureChat(chatId);
   const size = teamSize ?? chat.teamSize;
   const going = attendees(pollId);
@@ -115,6 +115,8 @@ export function shuffleForPoll(pollId: string, chatId: number, teamSize?: number
   const result = shuffleTeams(
     going.map((p) => ({ id: p.id, name: playerName(p), username: p.username ?? undefined, strength: p.strength })),
     size,
+    undefined,
+    teams,
   );
   return { result, text: formatTeams(result, { showSums: chat.showTeamSums }) };
 }

@@ -1,4 +1,5 @@
 import { InlineKeyboard, type Api } from "grammy";
+import type { ShuffleResult } from "../core/shuffle.js";
 import { getShuffle, saveShuffle, shuffleForPoll, updateShuffle, type ShuffleOutcome } from "../db/repo.js";
 
 const reshuffleKeyboard = (shuffleId: number) => new InlineKeyboard().text("🔄 Reshuffle", `rs:${shuffleId}`);
@@ -6,9 +7,9 @@ const reshuffleKeyboard = (shuffleId: number) => new InlineKeyboard().text("🔄
 /** Shuffles the poll's "in" list and posts the teams to the chat. Shared by the bot and the mini app. */
 export async function postShuffle(
   api: Api,
-  opts: { chatId: number; pollId: string; teamSize?: number; replyTo?: number },
+  opts: { chatId: number; pollId: string; teamSize?: number; teams?: number; replyTo?: number },
 ): Promise<ShuffleOutcome & { shuffleId: number }> {
-  const outcome = shuffleForPoll(opts.pollId, opts.chatId, opts.teamSize);
+  const outcome = shuffleForPoll(opts.pollId, opts.chatId, opts.teamSize, opts.teams);
   const row = saveShuffle({ pollId: opts.pollId, chatId: opts.chatId, result: outcome.result });
   const msg = await api.sendMessage(opts.chatId, outcome.text, {
     parse_mode: "HTML",
@@ -23,7 +24,8 @@ export async function postShuffle(
 export async function reshuffle(api: Api, shuffleId: number): Promise<void> {
   const prev = getShuffle(shuffleId);
   if (!prev?.pollId || !prev.messageId) throw new Error("This shuffle can no longer be updated.");
-  const outcome = shuffleForPoll(prev.pollId, prev.chatId, prev.teamSize);
+  const { requestedTeams } = JSON.parse(prev.resultJson) as ShuffleResult;
+  const outcome = shuffleForPoll(prev.pollId, prev.chatId, prev.teamSize, requestedTeams);
   await api.editMessageText(prev.chatId, prev.messageId, outcome.text, {
     parse_mode: "HTML",
     reply_markup: reshuffleKeyboard(shuffleId),
